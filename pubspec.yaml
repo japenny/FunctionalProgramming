@@ -1,0 +1,8 @@
+name: plc_dart
+description: A new Dart project.
+
+environment:
+  sdk: '^3.7.0'
+
+dependencies:
+  http: ^1.2.1
