@@ -4,6 +4,7 @@ import 'dart:io';
 import 'ConsoleUi.dart';
 import 'WebClient.dart';
 import 'C4Game.dart';
+import 'Cheat.dart';
 
 class Controller {
   late String url;
@@ -28,17 +29,44 @@ class Controller {
     strat = ui.promptStrategy(strats);
     pid = await net.getNew(strat);
 
+    // Enable cheats?
+    var cheatsOn = ui.promptToCheat();
+
     // Run c4 game
     var c4 = C4Game();
+    var cheat = Cheat();
     var c4Continue = true;
+    var showCheats = false;
 
     while (c4Continue) {
-      var slot = c4.getSlot();
+      print('\n\n');
+      if (showCheats) {
+        var suggestBoard = cheat.cheatSlot(c4.board);
+        c4.displayBoard(suggestBoard);
+      }
+      else {
+        c4.displayBoard();
+      }
+
+      int slot = -1;
+      bool validMove = false;
+
+      while (!validMove) {
+        slot = ui.getSlot();
+        validMove = c4.updateBoard(true, slot);
+
+        if (!validMove) {
+          print('Chosen slot is full, try again.');
+        }
+      }
       var gameInfo = await net.getPlay(pid, slot);
       c4Continue = c4.checkWin(gameInfo);
 
       if (!c4Continue){
         c4.finishedBoard();
+      }
+      if (cheatsOn) {
+        showCheats = true;
       }
     }
     print('Game Finished');

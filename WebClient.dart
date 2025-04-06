@@ -7,48 +7,73 @@ class WebClient {
   WebClient(this.serverUrl);
 
   Future<List?> getInfo() async {
-    var response = await http.get(Uri.parse(serverUrl + '/info/'));
-    if (response.statusCode != 200) {
-      print('Failed to get server info. Status code: ${response.statusCode}');
-      return null;
+    try {
+      var response = await http.get(Uri.parse(serverUrl + '/info/'));
+
+      if (response.statusCode != 200) {
+        stdout.write('Failed to get server info. Status code: ${response.statusCode}');
+        exit(255);
+      }
+
+      var info = json.decode(response.body);
+      List strategies = info['strategies'];
+      return strategies;
+    }
+    catch (e) {
+      stdout.write('Error fetchign server /info/: $e');
+      exit(255);
     }
 
-    var info = json.decode(response.body);
-    List strategies = info['strategies'];
-    return strategies;
   }
 
   Future<String> getNew(strat) async {
-    var response = await http.get(Uri.parse(serverUrl +
-                                  '/new/?strategy=' + strat));
+    try {
+      var response = await http.get(
+          Uri.parse(
+              serverUrl + '/new/?strategy=' + strat));
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to get server info. Status code: ${response.statusCode}');
+      if (response.statusCode != 200) {
+        stdout.write('Failed to get server info. Status code: ${response.statusCode}');
+        exit(255);
+      }
+
+      var info = json.decode(response.body);
+      if (!info['response']) {
+        stdout.write('Got response error: ${info['reason']}');
+        exit(255);
+      }
+
+      String pid = info['pid'];
+      return pid;
     }
-
-    var info = json.decode(response.body);
-    if (!info['response']) {
-      throw Exception('Failed to get server info. Status code: ${info['reason']}');
+    catch (e) {
+      stdout.write('Error fetching server /new/: $e');
+      exit(255);
     }
-
-    String pid = info['pid'];
-    return pid;
   }
 
   Future<Map<String, dynamic>> getPlay(pid, x) async {
-    var response = await http.get(
-        Uri.parse(
-            serverUrl + '/play/?pid=${pid}&move=${x}'
-        ));
+    try {
+      var response = await http.get(
+          Uri.parse(
+              serverUrl + '/play/?pid=${pid}&move=${x}'
+          ));
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to get server info. Status code: ${response.statusCode}');
-    }
+      if (response.statusCode != 200) {
+        stdout.write('Failed to get server info. Status code: ${response.statusCode}');
+        exit(255);
+      }
 
-    var info = json.decode(response.body);
-    if (!info['response']) {
-      throw Exception('Got error response: ${info['reason']}');
+      var info = json.decode(response.body);
+      if (!info['response']) {
+        stdout.write('Got error response: ${info['reason']}');
+        exit(255);
+      }
+      return info;
     }
-    return info;
+    catch (e) {
+      stdout.write('Error fetching server /play/: $e');
+      exit(255);
+    }
   }
 }
