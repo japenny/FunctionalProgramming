@@ -1,6 +1,16 @@
 import 'C4Game.dart';
 
+/**
+ * Provides cheats to user
+ */
 class Cheat extends C4Game {
+
+  /**
+   * Suggests the best move for the player.
+   *
+   * @param board The current game board
+   * @return A copy of the board with the suggested move highlighted
+   */
   dynamic cheatSlot(List<List<String>> board) {
     const maxDepth = 5;
     const player = 'X';
@@ -50,7 +60,14 @@ class Cheat extends C4Game {
     return board; // fallback if no valid move
   }
 
-
+  /**
+   * Uses the minimax algorithm to evaluate possible moves.
+   *
+   * @param board The current game board
+   * @param depth The current search depth
+   * @param isMaximizing Whether this is a maximizing or minimizing step
+   * @return Score for the best move
+   */
   int minimax(List<List<String>> board, int depth, bool isMaximizing) {
     var resultX = isWin('X', 4, board);
     var resultO = isWin('O', 4, board);
@@ -82,6 +99,12 @@ class Cheat extends C4Game {
     }
   }
 
+  /**
+   * Evaluates the current board state for the minimax algorithm.
+   *
+   * @param board The current game board
+   * @return Score for the board state
+   */
   int evaluateBoard(List<List<String>> board) {
     // Simple evaluation: count 3-in-a-rows for player - opponent
     int score = 0;
@@ -100,36 +123,14 @@ class Cheat extends C4Game {
     return score;
   }
 
-
-  // dynamic cheatSlot(List<List<String>> board) {
-  //   int cols = board[0].length;
-  //
-  //   for (int winCo = 4; winCo > 0; winCo--) {
-  //     for (int newMove = 0; newMove < cols; newMove++) {
-  //       var result;
-  //
-  //       // Try to win
-  //       var tempBoard = updateBoard(true, newMove, true, board);
-  //       if (tempBoard != false) {
-  //         result = isWin('X', winCo, tempBoard);
-  //         if (result['iswin'] == true) {
-  //           return tempBoard;
-  //         }
-  //       }
-  //
-  //       // Try to block bot
-  //       tempBoard = updateBoard(false, newMove, true, board);
-  //       if (tempBoard != false) {
-  //         result = isWin('O', winCo, tempBoard);
-  //         if (result['iswin'] == true) {
-  //           return updateBoard(true, newMove, true, board);
-  //         }
-  //       }
-  //     }
-  //   }
-  //   return board; // If no other good moves are found, return the original board
-  // }
-
+  /**
+  * Checks if a player has a winning sequence or potential sequence.
+  *
+  * @param player The player to check ('X' or 'O')
+  * @param winCo The number of pieces in a row to check for
+  * @param board The current game board
+  * @return Map indicating if there is a win or draw
+  */
   Map<String, bool> isWin(String player, int winCo, tempBoard) {
     final activeBoard = tempBoard;
     final rows = activeBoard.length;

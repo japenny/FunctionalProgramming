@@ -5,6 +5,9 @@ import 'Controller.dart';
 import 'ConsoleUi.dart';
 import 'WebClient.dart';
 
+/**
+ * Represents the Connect Four game board and core game logic.
+ */
 class C4Game {
   // Initialize a 6x7 board with '_' representing empty slots
   List<List<String>> board = List.generate(
@@ -12,7 +15,11 @@ class C4Game {
   );
   late List<int> winRow;
 
-  // Display the current state of the board
+  /**
+   * Displays the current state of the game board.
+   *
+   * @param board The game board to display
+   */
   void displayBoard([List<List<String>>? tempBoard]) {
     final workingBoard = tempBoard ?? board;
     const green = '\x1B[32m';
@@ -21,7 +28,7 @@ class C4Game {
     // Top border
     print('\n+---+---+---+---+---+---+---+');
 
-    // Print each row with better formatting
+    // Print each row
     for (var row in workingBoard) {
       StringBuffer rowDisplay = StringBuffer('|');
 
@@ -52,7 +59,12 @@ class C4Game {
     print('');
   }
 
-  // Check if the game is won, drawn, or still ongoing
+  /**
+   * Processes the game state after a move to determine if the game continues.
+   *
+   * @param gameInfo Information returned from the server about the current move
+   * @return True if the game should continue, false if the game has ended
+   */
   bool checkWin(Map<String, dynamic> gameInfo) {
     var ackMove = gameInfo['ack_move'];
     var move = gameInfo['move'];
@@ -80,7 +92,15 @@ class C4Game {
     return true;
   }
 
-  // Update the board with the player's or bot's move
+  /**
+   * Updates the board with a player or computer move.
+   *
+   * @param user True if the move is made by the user, false for the computer
+   * @param move Column index where the piece should be dropped
+   * @param isSimulation True if this is a simulation move (for AI calculations)
+   * @param tempBoard Optional temporary board for simulation
+   * @return Updated board for simulation, or true if move was successful, false if column is full
+   */
   dynamic updateBoard(bool user, int move, [is_ai=false, List<List<String>>? tempBoard]) {
     List<List<String>> workingBoard;
     if (is_ai && tempBoard != null) {
@@ -107,7 +127,9 @@ class C4Game {
     return false;
   }
 
-  // Display the final board with the winning row highlighted
+  /**
+   * Updates the board to highlight the winning sequence.
+   */
   void finishedBoard() {
     const blue = '\x1B[94m';
     const reset = '\x1B[0m';
